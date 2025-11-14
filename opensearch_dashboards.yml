@@ -1,0 +1,33 @@
+server.host: 0.0.0.0
+opensearch.hosts: https://127.0.0.1:9200
+server.port: 5601
+opensearch.ssl.verificationMode: certificate
+# opensearch.username: kibanaserver
+# opensearch.password: kibanaserver
+opensearch.requestHeadersAllowlist: ["securitytenant","Authorization"]
+opensearch_security.multitenancy.enabled: false
+opensearch_security.readonly_mode.roles: ["kibana_read_only"]
+server.ssl.enabled: true
+server.ssl.key: "/etc/wazuh-dashboard/certs/wazuh-dashboard-key.pem"
+server.ssl.certificate: "/etc/wazuh-dashboard/certs/wazuh-dashboard.pem"
+opensearch.ssl.certificateAuthorities: ["/etc/wazuh-dashboard/certs/root-ca.pem"]
+uiSettings.overrides.defaultRoute: /app/wz-home
+opensearch_security.cookie.secure: true
+#################################custom
+  #opensearch_dashboards.session.ttl: 43200000
+opensearch_security.cookie.ttl: 14400000
+opensearch_security.session.ttl: 14400000
+opensearch_security.session.keepalive: true
+# CSP configuration to allow iframe embedding and scripts
+csp.rules: []
+
+# Disable browser security warning
+csp.warnLegacyBrowsers: false
+##########keyclock seting
+opensearch_security.auth.multiple_auth_enabled: true
+opensearch_security.auth.type: ["basicauth","openid"]
+opensearch_security.openid.connect_url: https://cti.keyclock.net/realms/master/.well-known/openid-configuration
+opensearch_security.openid.base_redirect_url: https://wazuh.wincloudpms.net
+opensearch_security.openid.client_id: wazuh-oidc-app
+opensearch_security.openid.client_secret: cliensecret
+
