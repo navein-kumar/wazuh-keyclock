@@ -1,0 +1,31 @@
+---
+# In this file users, backendroles and hosts can be mapped to Open Distro Security roles.
+# Permissions for Opendistro roles are configured in roles.yml
+
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+
+# Define your roles mapping here
+
+## Default roles mapping
+
+all_access:
+  reserved: true
+  hidden: false
+  backend_roles:
+  - "admin"
+  - "wazuh_admin"
+  hosts: []
+  users: []
+  and_backend_roles: []
+  description: "Maps admin to all_access"
+
+#for read only roles
+wazuh_user_read: # This name must exactly match the role name in roles.yml
+  backend_roles:
+    # Under Backend roles, assign the name of the read-only role you have in your LDAP server.
+    # In our case, this is 'wazuh_user'.
+    - "wazuh_user_read"
+  description: "Read-only role mapped from LDAP wazuh_user group, as per docs"
+
