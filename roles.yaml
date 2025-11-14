@@ -1,0 +1,21 @@
+#add last for read only roles
+wazuh_user_read: # Name: Assign a name to the role (I've used 'wazuh_readonly_doc_role' as an example)
+  cluster_permissions:
+    # Cluster permissions: cluster_composite_ops_ro
+    - "cluster_composite_ops_ro"
+
+  index_permissions:
+    # Index: *
+    # Index permissions: read
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - "read"
+
+  tenant_permissions:
+    # Tenant permissions: * for all tenants, and Read only option.
+    - tenant_patterns:
+        - "*" # <--- CHANGE: This grants read-only access to ALL tenants
+      allowed_actions:
+        - "kibana_all_read" # This corresponds
+
