@@ -23,11 +23,11 @@ csp.rules: []
 
 # Disable browser security warning
 csp.warnLegacyBrowsers: false
-##########keyclock seting
+##########keyclock setings 
 opensearch_security.auth.multiple_auth_enabled: true
 opensearch_security.auth.type: ["basicauth","openid"]
-opensearch_security.openid.connect_url: https://cti.keyclock.net/realms/master/.well-known/openid-configuration
-opensearch_security.openid.base_redirect_url: https://wazuh.wincloudpms.net
+opensearch_security.openid.connect_url: https://sso.keyclock.net/realms/master/.well-known/openid-configuration  #keyclok url
+opensearch_security.openid.base_redirect_url: https://wazuh.clientweb.net  #wazuh url 
 opensearch_security.openid.client_id: wazuh-oidc-app
 opensearch_security.openid.client_secret: cliensecret
 
