@@ -1,0 +1,43 @@
+---
+_meta:
+  type: "config"
+  config_version: 2
+
+config:
+  dynamic:
+    http:
+      anonymous_auth_enabled: false
+      xff:
+        enabled: false
+        internalProxies: '192\.168\.0\.10|192\.168\.0\.11'
+
+    authc:
+      # OIDC should come first for web authentication
+      openid_auth_domain:
+        description: "Authenticate via OpenID Connect"
+        http_enabled: true
+        transport_enabled: false
+        order: 0
+        http_authenticator:
+          type: openid
+          challenge: false
+          config:
+            subject_key: preferred_username
+            roles_key: groups #change scope based roles or grups
+            openid_connect_url: https://cti.keyclock.net/realms/master/.well-known/openid-configuration
+        authentication_backend:
+          type: noop
+
+      # Basic auth as fallback for API access
+      basic_internal_auth_domain:
+        description: "Authenticate via HTTP Basic against internal users database"
+        http_enabled: true
+        transport_enabled: true
+        order: 1
+        http_authenticator:
+          type: basic
+          challenge: true
+        authentication_backend:
+          type: intern
+
+
