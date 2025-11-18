@@ -1,3 +1,5 @@
+#pls read below config properly
+
 server.host: 0.0.0.0
 opensearch.hosts: https://127.0.0.1:9200
 server.port: 5601
@@ -13,6 +15,7 @@ server.ssl.certificate: "/etc/wazuh-dashboard/certs/wazuh-dashboard.pem"
 opensearch.ssl.certificateAuthorities: ["/etc/wazuh-dashboard/certs/root-ca.pem"]
 uiSettings.overrides.defaultRoute: /app/wz-home
 opensearch_security.cookie.secure: true
+
 #################################custom
   #opensearch_dashboards.session.ttl: 43200000
 opensearch_security.cookie.ttl: 14400000
@@ -23,11 +26,21 @@ csp.rules: []
 
 # Disable browser security warning
 csp.warnLegacyBrowsers: false
-##########keyclock setings 
+
+##########keyclock setings for idc
 opensearch_security.auth.multiple_auth_enabled: true
 opensearch_security.auth.type: ["basicauth","openid"]
 opensearch_security.openid.connect_url: https://sso.keyclock.net/realms/master/.well-known/openid-configuration  #keyclok url
 opensearch_security.openid.base_redirect_url: https://wazuh.clientweb.net  #wazuh url 
 opensearch_security.openid.client_id: wazuh-oidc-app
 opensearch_security.openid.client_secret: cliensecret
+
+##########keyclock setings for saml
+opensearch_security.auth.multiple_auth_enabled: true
+opensearch_security.auth.type: ["basicauth","saml"]
+  #opensearch_security.auth.type: "saml"
+server.xsrf.allowlist: ["/_opendistro/_security/saml/acs", "/_opendistro/_security/saml/logout", "/_opendistro/_security/saml/acs/idpinitiated"]
+opensearch_security.session.keepalive: false
+
+
 
