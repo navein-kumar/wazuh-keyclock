@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: keycloak-postgres-bind
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_strong_password}
+    volumes:
+      # Bind mount for PostgreSQL data
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak-bind
+    command: start
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-change_me_strong_password}
+      KC_HOSTNAME: cti.wincloudpms.net
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_PORT: 8080
+      KC_HTTPS_PORT: 8443
+      KC_PROXY: edge
+      KC_PROXY_ADDRESS_FORWARDING: "true"
+      KC_HTTP_RELATIVE_PATH: /
+      # Trust proxy headers from NPM
+      KC_PROXY_HEADERS: xforwarded
+      # Admin credentials
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-change_me_admin_password}
+      # Enable health checks
+      KC_HEALTH_ENABLED: "true"
+      # Logging configuration for Wazuh integration
+      KC_LOG_LEVEL: INFO
+      # Console logging (also captured by Docker)
+      KC_LOG_CONSOLE_OUTPUT: default
+      KC_LOG_CONSOLE_FORMAT: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n"
+      KC_LOG_CONSOLE_COLOR: "false"
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - keycloak-network
+    restart: always
+    volumes:
+      # Bind mount for Keycloak data
+      - ./data/keycloak:/opt/keycloak/data
+      # Bind mount for Keycloak logs (for Wazuh monitoring)
+      - ./data/logs:/var/log/keycloak
+    # Docker logging driver to write logs to file for Wazuh
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "keycloak"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+networks:
+  keycloak-network:
+    driver: bridge
+
+
